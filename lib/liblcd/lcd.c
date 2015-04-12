@@ -104,6 +104,53 @@ lcd_clearScreen(struct lcd *lcd, uint32_t c)
 	return (0);
 }
 
+#define	swap(a, b)	{ int16_t t = a; a = b; b = t; }
+static int
+lcd_drawLine(struct lcd *lcd, int16_t x0, int16_t y0,
+    int16_t x1, int16_t y1, uint32_t c)
+{
+	int16_t steep = abs(y1 - y0) > abs(x1 - x0);
+	if (steep) {
+		swap(x0, y0);
+		swap(x1, y1);
+	}
+
+	if (x0 > x1) {
+		swap(x0, x1);
+		swap(y0, y1);
+	}
+
+	int16_t dx, dy;
+	dx = x1 - x0;
+	dy = abs(y1 - y0);
+
+	int16_t err = dx / 2;
+	int16_t ystep;
+
+	if (y0 < y1) {
+		ystep = 1;
+	} else {
+		ystep = -1;
+	}
+
+	for (; x0<=x1; x0++) {
+		if (steep) {
+			lcd->lcd_pixel(lcd, y0, x0, c);
+		} else {
+			lcd->lcd_pixel(lcd, x0, y0, c);
+		}
+		err -= dy;
+		if (err < 0) {
+			y0 += ystep;
+			err += dx;
+		}
+	}
+
+	return (0);
+}
+
+#undef	swap
+
 struct lcd *
 lcd_create(void)
 {
@@ -119,6 +166,7 @@ lcd_create(void)
 	l->lcd_row_blit = lcd_rowBlit;
 	l->lcd_putchar = lcd_putChar;
 	l->lcd_putstr = lcd_putStr;
+	l->lcd_line = lcd_drawLine;
 
 	return (l);
 }
