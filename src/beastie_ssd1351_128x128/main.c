@@ -43,7 +43,7 @@ main(int argc, const char *argv[])
 
 	/* White bar - left */
 	for (x = 0; x < 16; x++)
-		lcd->lcd_line(lcd, x, 0, x, 63, 0xffffffff);
+		lcd->lcd_vline(lcd, x, 0, 63, 0xffffffff);
 
 	/* Bitmap */
 	for (y = 0; y < 64; y++) {
@@ -61,7 +61,7 @@ main(int argc, const char *argv[])
 
 	/* White bar - right */
 	for (x = 80; x < 96; x++)
-		lcd->lcd_line(lcd, x, 0, x, 63, 0xffffffff);
+		lcd->lcd_vline(lcd, x, 0, 63, 0xffffffff);
 
 	/* Test putstring */
 //	lcd->lcd_putstr(lcd, 0, 0, "Hello, world!", 0x00ff007f, 0);
