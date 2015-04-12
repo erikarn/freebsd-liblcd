@@ -184,88 +184,74 @@ lcd_ili9340c_drawPixel(struct lcd *lcd, int16_t x, int16_t y,
 	return (0);
 }
 
-#if 0
-void Adafruit_ILI9340::drawFastVLine(int16_t x, int16_t y, int16_t h,
- uint16_t color) {
+/*
+ * Draw a horizontal line.
+ */
+static int
+lcd_ili9340c_rawFastHLine(struct lcd *lcd, int16_t x0, int16_t x1, int16_t y0,
+    uint32_t c)
+{
+	struct lcd_ili9340c *l;
+	uint16_t color;
+	int i;
+	int16_t w;
 
-  // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
+	l = lcd->hw;
 
-  if((y+h-1) >= _height)
-    h = _height-y;
+	/* Map colour */
+	color = lcd_ili9340c_Color565((c >> 16) & 0xff,
+	    (c >> 8) & 0xff,
+	    (c) & 0xff);
 
-  setAddrWindow(x, y, x, y+h-1);
+	/* XXX bounds checking */
 
-  uint8_t hi = color >> 8, lo = color;
+	/* Calculate width */
+	w = x1 - x0 + 1;
 
-  SET_BIT(dcport, dcpinmask);
-  //digitalWrite(_dc, HIGH);
-  CLEAR_BIT(csport, cspinmask);
-  //digitalWrite(_cs, LOW);
+	// set location
+	lcd_ili9340c_setAddrWindow(l, x0, y0, x1, y0);
 
-  while (h--) {
-    spiwrite(hi);
-    spiwrite(lo);
-  }
-  SET_BIT(csport, cspinmask);
-  //digitalWrite(_cs, HIGH);
+	/* Fill! */
+	for (i = 0; i < w; i++) {
+		lcd_ili9340c_pushColor(l, color);
+	}
+
+	return (0);
 }
+/*
+ * Draw a vertical line.
+ */
+static int
+lcd_ili9340c_rawFastVLine(struct lcd *lcd, int16_t x0, int16_t y0, int16_t y1,
+    uint32_t c)
+{
+	struct lcd_ili9340c *l;
+	uint16_t color;
+	int i;
+	int16_t h;
 
+	l = lcd->hw;
 
-void Adafruit_ILI9340::drawFastHLine(int16_t x, int16_t y, int16_t w,
-  uint16_t color) {
+	/* Map colour */
+	color = lcd_ili9340c_Color565((c >> 16) & 0xff,
+	    (c >> 8) & 0xff,
+	    (c) & 0xff);
 
-  // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
-  if((x+w-1) >= _width)  w = _width-x;
-  setAddrWindow(x, y, x+w-1, y);
+	/* XXX bounds checking */
 
-  uint8_t hi = color >> 8, lo = color;
-  SET_BIT(dcport, dcpinmask);
-  CLEAR_BIT(csport, cspinmask);
-  //digitalWrite(_dc, HIGH);
-  //digitalWrite(_cs, LOW);
-  while (w--) {
-    spiwrite(hi);
-    spiwrite(lo);
-  }
-  SET_BIT(csport, cspinmask);
-  //digitalWrite(_cs, HIGH);
+	/* Height */
+	h = y1 - y0 + 1;
+
+	/* Location */
+	lcd_ili9340c_setAddrWindow(l, x0, y0, x0, y1);
+
+	/* Fill! */
+	for (i = 0; i < h; i++) {
+		lcd_ili9340c_pushColor(l, color);
+	}
+
+	return (0);
 }
-
-void Adafruit_ILI9340::fillScreen(uint16_t color) {
-  fillRect(0, 0,  _width, _height, color);
-}
-
-// fill a rectangle
-void Adafruit_ILI9340::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-  uint16_t color) {
-
-  // rudimentary clipping (drawChar w/big text requires this)
-  if((x >= _width) || (y >= _height)) return;
-  if((x + w - 1) >= _width)  w = _width  - x;
-  if((y + h - 1) >= _height) h = _height - y;
-
-  setAddrWindow(x, y, x+w-1, y+h-1);
-
-  uint8_t hi = color >> 8, lo = color;
-
-  SET_BIT(dcport, dcpinmask);
-  //digitalWrite(_dc, HIGH);
-  CLEAR_BIT(csport, cspinmask);
-  //digitalWrite(_cs, LOW);
-
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
-      spiwrite(hi);
-      spiwrite(lo);
-    }
-  }
-  //digitalWrite(_cs, HIGH);
-  SET_BIT(csport, cspinmask);
-}
-
-#endif
 
 static int
 lcd_ili9340c_rowBlit(struct lcd *lcd, int16_t x, int16_t y,
@@ -454,8 +440,8 @@ lcd_ili9340c_init(struct lcd_ili9340c_cfg *cfg)
 	l->tft_width = 320;
 	l->tft_height = 240;
 	l->lcd_pixel = lcd_ili9340c_drawPixel;
-//	l->lcd_hline = lcd_ili9340c_rawFastHLine;
-//	l->lcd_vline = lcd_ili9340c_rawFastVLine;
+	l->lcd_hline = lcd_ili9340c_rawFastHLine;
+	l->lcd_vline = lcd_ili9340c_rawFastVLine;
 	l->lcd_row_blit = lcd_ili9340c_rowBlit;
 
 	h->pin_cs = cfg->pin_cs;
