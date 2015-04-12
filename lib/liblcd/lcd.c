@@ -63,7 +63,7 @@ lcd_putStr(struct lcd *lcd, int16_t x0, int16_t y0,
 	 * XXX TODO: more bounds checking!
 	 */
 	while (*s != '\0') {
-		if (x + x0 >= lcd->width)
+		if (x + x0 >= lcd->tft_width)
 			break;
 		lcd_putChar(lcd, x0 + x, y0, *s, fg, bg);
 		s++;
@@ -97,8 +97,8 @@ lcd_clearScreen(struct lcd *lcd, uint32_t c)
 
 	/* Map colour */
 
-	for (y = 0; y < lcd->height; y++) {
-		lcd->lcd_line(lcd, 0, y, lcd->width - 1, y, c);
+	for (y = 0; y < lcd->tft_height; y++) {
+		lcd->lcd_line(lcd, 0, y, lcd->tft_width - 1, y, c);
 	}
 
 	return (0);

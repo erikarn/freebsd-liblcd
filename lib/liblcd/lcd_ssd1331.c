@@ -14,21 +14,6 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
-#if 0
-#include "Adafruit_GFX.h"
-#include "Adafruit_SSD1331.h"
-#include "glcdfont.c"
-
-#ifdef __avr__
-#include <avr/pgmspace.h>
-#endif
-
-#include "pins_arduino.h"
-#include "wiring_private.h"
-#include <SPI.h>
-
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -118,17 +103,17 @@ lcd_ssd1331_writeData(struct lcd_ssd1331 *l, uint8_t c)
 static void
 lcd_ssd1331_goTo(struct lcd_ssd1331 *l, int x, int y)
 {
-	if ((x >= l->lcd->width) || (y >= l->lcd->height))
+	if ((x >= l->lcd->tft_width) || (y >= l->lcd->tft_height))
 		return;
 
 	/* set x and y coordinate */
 	lcd_ssd1331_writeCommand(l, SSD1331_CMD_SETCOLUMN);
 	lcd_ssd1331_writeCommand(l, x);
-	lcd_ssd1331_writeCommand(l, l->lcd->width - 1);
+	lcd_ssd1331_writeCommand(l, l->lcd->tft_width - 1);
 
 	lcd_ssd1331_writeCommand(l, SSD1331_CMD_SETROW);
 	lcd_ssd1331_writeCommand(l, y);
-	lcd_ssd1331_writeCommand(l, l->lcd->height - 1);
+	lcd_ssd1331_writeCommand(l, l->lcd->tft_height - 1);
 }
 
 static uint16_t
@@ -231,35 +216,10 @@ lcd_ssd1331_drawLine(struct lcd *lcd, int16_t x0, int16_t y0,
 	    (c >> 8) & 0xff,
 	    (c) & 0xff);
 
-
-#if 0
-  // check rotation, move pixel around if necessary
-  switch (getRotation()) {
-  case 1:
-    swap(x0, y0);
-    swap(x1, y1);
-    x0 = WIDTH - x0 - 1;
-    x1 = WIDTH - x1 - 1;
-    break;
-  case 2:
-    x0 = WIDTH - x0 - 1;
-    y0 = HEIGHT - y0 - 1;
-    x1 = WIDTH - x1 - 1;
-    y1 = HEIGHT - y1 - 1;
-    break;
-  case 3:
-    swap(x0, y0);
-    swap(x1, y1);
-    y0 = HEIGHT - y0 - 1;
-    y1 = HEIGHT - y1 - 1;
-    break;
-  }
-#endif
-
 	// Boundary check
-	if ((y0 >= l->lcd->height) && (y1 >= l->lcd->height))
+	if ((y0 >= l->lcd->tft_height) && (y1 >= l->lcd->tft_height))
 		return (-1);
-	if ((x0 >= l->lcd->width) && (x1 >= l->lcd->width))
+	if ((x0 >= l->lcd->tft_width) && (x1 >= l->lcd->tft_width))
 		return (-1);
 #if 0
   if (x0 >= TFTWIDTH)
@@ -292,26 +252,6 @@ lcd_ssd1331_drawPixel(struct lcd *lcd, int16_t x, int16_t y,
 {
 	struct lcd_ssd1331 *l = lcd->hw;
 	uint16_t color;
-
-#if 0
-if ((x < 0) || (x >= width()) || (y < 0) || (y >= height())) return;
-
-  // check rotation, move pixel around if necessary
-  switch (getRotation()) {
-  case 1:
-    swap(x, y);
-    x = WIDTH - x - 1;
-    break;
-  case 2:
-    x = WIDTH - x - 1;
-    y = HEIGHT - y - 1;
-    break;
-  case 3:
-    swap(x, y);
-    y = HEIGHT - y - 1;
-    break;
-  }
-#endif
 
 	/* XXX Boundary check */
 
@@ -434,26 +374,6 @@ lcd_ssd1331_begin(struct lcd_ssd1331 *l)
 	lcd_ssd1331_writeCommand(l, SSD1331_CMD_DISPLAYON);	//--turn on oled panel    
 }
 
-#if 0
-/********************************* low level pin initialization */
-
-Adafruit_SSD1331::Adafruit_SSD1331(uint8_t cs, uint8_t rs, uint8_t sid, uint8_t sclk, uint8_t rst) : Adafruit_GFX(TFTWIDTH, TFTHEIGHT) {
-    _cs = cs;
-    _rs = rs;
-    _sid = sid;
-    _sclk = sclk;
-    _rst = rst;
-}
-
-Adafruit_SSD1331::Adafruit_SSD1331(uint8_t cs, uint8_t rs, uint8_t rst) : Adafruit_GFX(TFTWIDTH, TFTHEIGHT) {
-    _cs = cs;
-    _rs = rs;
-    _sid = 0;
-    _sclk = 0;
-    _rst = rst;
-}
-#endif
-
 struct lcd *
 lcd_ssd1331_init(struct lcd_ssd1331_cfg *cfg)
 {
@@ -487,9 +407,6 @@ lcd_ssd1331_init(struct lcd_ssd1331_cfg *cfg)
 	/* Initialise LCD layer with parameters and hardware methods */
 	l->tft_width = 96;
 	l->tft_height = 64;
-	/* NB: no rotation support yet */
-	l->width = 96;
-	l->height = 64;
 	l->lcd_pixel = lcd_ssd1331_drawPixel;
 	l->lcd_line = lcd_ssd1331_drawLine;
 	l->lcd_row_blit = lcd_ssd1331_rowBlit;

@@ -6,10 +6,6 @@ struct lcd {
 	int tft_width;
 	int tft_height;
 
-	/* Viewport height/width (for rotation, later) */
-	int height;
-	int width;
-
 	/* HAL local state pointer */
 	void *hw;
 
