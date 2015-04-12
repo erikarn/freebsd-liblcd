@@ -93,12 +93,13 @@ lcd_clearScreen(struct lcd *lcd, uint32_t c)
 {
 	struct lcd_ssd1331 *h = lcd->hw;
 	uint16_t y;
-	uint16_t color;
 
-	/* Map colour */
-
+	/*
+	 * Use hline; most LCDs have an accelerated
+	 * version of this.
+	 */
 	for (y = 0; y < lcd->tft_height; y++) {
-		lcd->lcd_line(lcd, 0, y, lcd->tft_width - 1, y, c);
+		lcd->lcd_hline(lcd, 0, lcd->tft_width - 1, y, c);
 	}
 
 	return (0);
@@ -151,6 +152,32 @@ lcd_drawLine(struct lcd *lcd, int16_t x0, int16_t y0,
 
 #undef	swap
 
+static int
+lcd_horizLine(struct lcd *lcd, int16_t x0, int16_t x1,
+    int16_t y0, uint32_t c)
+{
+	int i;
+
+	for (i = x0; i <= x1; i++) {
+		lcd->lcd_pixel(lcd, i, y0, c);
+	}
+
+	return (0);
+}
+
+static int
+lcd_vertLine(struct lcd *lcd, int16_t x0, int16_t y0,
+    int16_t y1, uint32_t c)
+{
+	int i;
+
+	for (i = y0; i <= y1; i++) {
+		lcd->lcd_pixel(lcd, x0, i, c);
+	}
+
+	return (0);
+}
+
 struct lcd *
 lcd_create(void)
 {
@@ -167,6 +194,8 @@ lcd_create(void)
 	l->lcd_putchar = lcd_putChar;
 	l->lcd_putstr = lcd_putStr;
 	l->lcd_line = lcd_drawLine;
+	l->lcd_hline = lcd_horizLine;
+	l->lcd_vline = lcd_vertLine;
 
 	return (l);
 }

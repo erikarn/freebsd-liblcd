@@ -9,20 +9,33 @@ struct lcd {
 	/* HAL local state pointer */
 	void *hw;
 
-	/* API - set by the LCD HAL */
+	/* API - the minimal implementation required of the LCD HAL */
 
 	/* Plot a pixel - c is 'xxRRGGBB' format */
 	int (*lcd_pixel)(struct lcd *l, int16_t x, int16_t y, uint32_t c);
 
 	/*
-	 * XXX TODO: other methods; some of which will
-	 * have LCD accelerated versions and may be overridden
-	 * by the LCD HAL.
+	 * Other methods; some of which will have LCD accelerated versions
+	 * and may be overridden by the LCD HAL.
 	 */
 
-	/* Draw a line */
+	/* Draw an arbitrary line */
 	int (*lcd_line) (struct lcd *lcd, int16_t x0, int16_t y0,
 	    int16_t x1, int16_t y1, uint32_t c);
+
+	/* Draw a horizontal line */
+	int (*lcd_hline) (struct lcd *lcd, int16_t x0, int16_t x1,
+	    int16_t y0, uint32_t c);
+
+	/* Draw a vertical line */
+	int (*lcd_vline) (struct lcd *lcd, int16_t x0, int16_t y0,
+	    int16_t y1, uint32_t c);
+
+#if 0
+	/* Draw a filled in rectangle */
+	int (*lcd_box) (struct lcd *lcd, int16_t x0, int16_t y0,
+	    int16_t y0, int16_t y1, uint32_t bc, uint32_t fc);
+#endif
 
 	/* Clear the screen to colour 'c' */
 	int (*lcd_clear) (struct lcd *lcd, uint32_t c);
