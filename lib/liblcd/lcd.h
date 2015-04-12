@@ -27,6 +27,9 @@ struct lcd {
 	/* Draw a line */
 	int (*lcd_line) (struct lcd *lcd, int16_t x0, int16_t y0,
 	    int16_t x1, int16_t y1, uint32_t c);
+
+	/* Clear the screen to colour 'c' */
+	int (*lcd_clear) (struct lcd *lcd, uint32_t c);
 };
 
 extern	struct lcd * lcd_create(void);

@@ -28,9 +28,7 @@ main(int argc, const char *argv[])
 		exit(127);
 
 	/* Blank out the screen */
-	for (x = 0; x < 96; x++) {
-		lcd->lcd_line(lcd, x, 0, x, 63, 0);
-	}
+	lcd->lcd_clear(lcd, 0);
 
 	/* White bars */
 	for (x = 0; x < 16; x++)
