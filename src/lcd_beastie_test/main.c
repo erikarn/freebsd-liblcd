@@ -22,9 +22,18 @@ main(int argc, const char *argv[])
 	uint8_t col[3];
 	struct lcd *lcd;
 	uint32_t row_rgb[64];
+	struct lcd_ssd1331_cfg cfg;
+
+	/* Configured for the carambola 2 board */
+	cfg.gpio_unit = 0;
+	cfg.pin_cs = 19;
+	cfg.pin_rst = 20;
+	cfg.pin_dc = 21;
+	cfg.pin_sck = 22;
+	cfg.pin_mosi = 23;
 
 	/* Create an instance of the SSD1331 */
-	lcd = lcd_ssd1331_init();
+	lcd = lcd_ssd1331_init(&cfg);
 	if (lcd == NULL)
 		exit(127);
 

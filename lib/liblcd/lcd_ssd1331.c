@@ -455,7 +455,7 @@ Adafruit_SSD1331::Adafruit_SSD1331(uint8_t cs, uint8_t rs, uint8_t rst) : Adafru
 #endif
 
 struct lcd *
-lcd_ssd1331_init(void)
+lcd_ssd1331_init(struct lcd_ssd1331_cfg *cfg)
 {
 	struct lcd_ssd1331 *h = 0;
 	struct lcd *l = 0;
@@ -478,7 +478,7 @@ lcd_ssd1331_init(void)
 	h->lcd = l;
 
 	/* HAL: create GPIO handle */
-	h->gp = gpio_open(0);
+	h->gp = gpio_open(cfg->gpio_unit);
 	if (h->gp == GPIO_VALUE_INVALID) {
 		warn("%s: gpio_open", __func__);
 		goto error;
@@ -494,12 +494,11 @@ lcd_ssd1331_init(void)
 	l->lcd_line = lcd_ssd1331_drawLine;
 	l->lcd_row_blit = lcd_ssd1331_rowBlit;
 
-	/* XXX hard-coded gpio pins for testing */
-	h->pin_cs = 19;
-	h->pin_rst = 20;
-	h->pin_dc = 21;
-	h->pin_sck = 22;
-	h->pin_mosi = 23;
+	h->pin_cs = cfg->pin_cs;
+	h->pin_rst = cfg->pin_rst;
+	h->pin_dc = cfg->pin_dc;
+	h->pin_sck = cfg->pin_sck;
+	h->pin_mosi = cfg->pin_mosi;
 
 	/* Configure as outputs */
 	(void) gpio_pin_output(h->gp, h->pin_cs);
