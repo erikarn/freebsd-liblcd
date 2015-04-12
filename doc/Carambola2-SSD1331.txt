@@ -1,0 +1,46 @@
+Quick howto for Carambola 2 + SSD1331
+-------------------------------------
+
+This is a very quick howto on how to hook up the Carambola 2 to the
+Adafruit 96x64 OLED colour display based on the SSD1331.
+
+The Adafruit tutorial:
+
+https://learn.adafruit.com/096-mini-color-oled/wiring
+
+The Carambola 2 evaluation board pinout:
+
+http://www.8devices.com/wiki/carambola:2:specifications
+
+To use the newer version with the Carambola 2 evaluation board:
+
+* GND: PIN 21: (GND)
+* VCC: PIN 22: (+5V)
+* SDCS: (SD card chip enable; skip)
+* OCS: PIN 30: (GPIO 19) (LCD chip enable)
+* RST: PIN 29: (GPIO 20) (LCD reset)
+* D/C: PIN 28: (GPIO 21) (Data/Command select)
+* SCK: PIN 27: (GPIO 22) (SPI clock)
+* MOSI: PIN 26: (GPIO 23) (SPI data write)
+* MISO: (SPI data read; skip)
+* CD: (SD card detect; skip)
+
+The test program in src/lcd_beastie_test/ is configured to use
+these GPIO pins on the Carambola 2 and the default Carambola 2
+kernel in FreeBSD-HEAD should have these pins exposed.
+
+To check if the GPIO pins are available, use 'gpioctl -l':
+
+...
+pin 18: 0       pin 18<IN>
+pin 19: 1       pin 19<OUT>
+pin 20: 1       pin 20<OUT>
+pin 21: 0       pin 21<OUT>
+pin 22: 1       pin 22<OUT>
+pin 23: 0       pin 23<OUT>
+...
+
+
+As long as they show up as IN or OUT it'll work - the test
+program will set the direction correctly.
+
