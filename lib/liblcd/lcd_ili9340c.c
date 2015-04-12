@@ -453,7 +453,7 @@ lcd_ili9340c_init(struct lcd_ili9340c_cfg *cfg)
 	l->lcd_pixel = lcd_ili9340c_drawPixel;
 //	l->lcd_hline = lcd_ili9340c_rawFastHLine;
 //	l->lcd_vline = lcd_ili9340c_rawFastVLine;
-//	l->lcd_row_blit = lcd_ili9340c_rowBlit;
+	l->lcd_row_blit = lcd_ili9340c_rowBlit;
 
 	h->pin_cs = cfg->pin_cs;
 	h->pin_rst = cfg->pin_rst;
