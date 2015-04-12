@@ -408,6 +408,32 @@ lcd_ssd1351_rawFastVLine(struct lcd *lcd, int16_t x0, int16_t y0, int16_t y1,
 }
 
 static int
+lcd_ssd1351_rowBlit(struct lcd *lcd, int16_t x, int16_t y,
+    uint32_t *rgb, int l)
+{
+	struct lcd_ssd1351 *h = lcd->hw;
+	int i;
+	uint16_t color;
+	uint32_t c;
+
+	/* Set starting point */
+	lcd_ssd1351_goTo(h, x, y);
+
+	/* Push lots of colours */
+	lcd_ssd1351_writeCommand(h, SSD1351_CMD_WRITERAM);
+	for (i = 0; i < l; i++) {
+		c = rgb[i];
+		color = lcd_ssd1351_Color565((c >> 16) & 0xff,
+		    (c >> 8) & 0xff,
+		    (c) & 0xff);
+		lcd_ssd1351_writeData(h, color >> 8);
+		lcd_ssd1351_writeData(h, color);
+	}
+
+	return (0);
+}
+
+static int
 lcd_ssd1351_begin(struct lcd_ssd1351 *l)
 {
 
@@ -540,8 +566,7 @@ lcd_ssd1351_init(struct lcd_ssd1351_cfg *cfg)
 	l->lcd_pixel = lcd_ssd1351_drawPixel;
 	l->lcd_hline = lcd_ssd1351_rawFastHLine;
 	l->lcd_vline = lcd_ssd1351_rawFastVLine;
-	//l->lcd_line = lcd_ssd1331_drawLine;
-	//l->lcd_row_blit = lcd_ssd1331_rowBlit;
+	l->lcd_row_blit = lcd_ssd1351_rowBlit;
 
 	h->pin_cs = cfg->pin_cs;
 	h->pin_rst = cfg->pin_rst;
