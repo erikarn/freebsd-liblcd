@@ -180,7 +180,7 @@ lcd_ili9340c_drawPixel(struct lcd *lcd, int16_t x, int16_t y,
 	    (c) & 0xff);
 
 	lcd_ili9340c_setAddrWindow(l, x,y,x+1,y+1);
-	lcd_ili9340c_pushColor(l, c);
+	lcd_ili9340c_pushColor(l, color);
 	return (0);
 }
 
