@@ -30,6 +30,10 @@ struct lcd {
 
 	/* Clear the screen to colour 'c' */
 	int (*lcd_clear) (struct lcd *lcd, uint32_t c);
+
+	/* Plot the row of RGB data at x, y, length l */
+	int (*lcd_row_blit) (struct lcd *lcd, int16_t x, int16_t y,
+	    uint32_t *rgb, int l);
 };
 
 extern	struct lcd * lcd_create(void);

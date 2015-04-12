@@ -21,6 +21,7 @@ main(int argc, const char *argv[])
 	const char *hd = header_data;
 	uint8_t col[3];
 	struct lcd *lcd;
+	uint32_t row_rgb[64];
 
 	/* Create an instance of the SSD1331 */
 	lcd = lcd_ssd1331_init();
@@ -36,11 +37,16 @@ main(int argc, const char *argv[])
 
 	/* Bitmap */
 	for (y = 0; y < 64; y++) {
-		for (x = 16; x < 80; x++) {
+
+		/* Assemble the row data to blit */
+		for (x = 0; x < 64; x++) {
 			HEADER_PIXEL(hd, col);
 			c = ((col[0] << 16) | (col[1] << 8) | (col[2]));
-			lcd->lcd_pixel(lcd, x, y, c);
+			row_rgb[x] = c;
 		}
+
+		/* Blit the whole row at once */
+		lcd->lcd_row_blit(lcd, 16, y, row_rgb, 64);
 	}
 
 	/* White bars */

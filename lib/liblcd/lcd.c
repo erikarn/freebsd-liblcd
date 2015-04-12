@@ -6,6 +6,21 @@
 #include "lcd.h"
 
 static int
+lcd_rowBlit(struct lcd *lcd, int16_t x, int16_t y,
+    uint32_t *rgb, int l)
+{
+	int i;
+
+	/* XXX TODO: bounds checking */
+
+	for (i = 0; i < l; i++) {
+		lcd->lcd_pixel(lcd, x + i, y, rgb[i]);
+	}
+
+	return (0);
+}
+
+static int
 lcd_clearScreen(struct lcd *lcd, uint32_t c)
 {
 	struct lcd_ssd1331 *h = lcd->hw;
@@ -33,6 +48,7 @@ lcd_create(void)
 	}
 
 	l->lcd_clear = lcd_clearScreen;
+	l->lcd_row_blit = lcd_rowBlit;
 
 	return (l);
 }
