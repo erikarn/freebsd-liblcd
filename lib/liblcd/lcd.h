@@ -34,6 +34,14 @@ struct lcd {
 	/* Plot the row of RGB data at x, y, length l */
 	int (*lcd_row_blit) (struct lcd *lcd, int16_t x, int16_t y,
 	    uint32_t *rgb, int l);
+
+	/* Write character at given x, y */
+	int (* lcd_putchar) (struct lcd *lcd, int16_t x0, int16_t y0,
+	    unsigned char c, uint32_t fg, uint32_t bg);
+
+	/* Write string at given x, y */
+	int (* lcd_putstr) (struct lcd *lcd, int16_t x0, int16_t y0,
+	    const unsigned char *s, uint32_t fg, uint32_t bg);
 };
 
 extern	struct lcd * lcd_create(void);

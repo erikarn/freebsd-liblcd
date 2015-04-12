@@ -31,7 +31,7 @@ main(int argc, const char *argv[])
 	/* Blank out the screen */
 	lcd->lcd_clear(lcd, 0);
 
-	/* White bars */
+	/* White bar - left */
 	for (x = 0; x < 16; x++)
 		lcd->lcd_line(lcd, x, 0, x, 63, 0xffffffff);
 
@@ -49,9 +49,12 @@ main(int argc, const char *argv[])
 		lcd->lcd_row_blit(lcd, 16, y, row_rgb, 64);
 	}
 
-	/* White bars */
+	/* White bar - right */
 	for (x = 80; x < 96; x++)
 		lcd->lcd_line(lcd, x, 0, x, 63, 0xffffffff);
+
+	/* Test putstring */
+//	lcd->lcd_putstr(lcd, 0, 0, "Hello, world!", 0x00ff007f, 0);
 
 	exit(0);
 }

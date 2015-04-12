@@ -1,5 +1,5 @@
 LIB=lcd
-SRCS=lcd.c lcd_ssd1331.c
-INCS=lcd.h lcd_ssd1331.h lcd_ssd1331_hw.h
+SRCS=lcd.c lcd_ssd1331.c font_5x7.c
+INCS=lcd.h lcd_ssd1331.h lcd_ssd1331_hw.h font_5x7.h
 
 .include <bsd.lib.mk>
