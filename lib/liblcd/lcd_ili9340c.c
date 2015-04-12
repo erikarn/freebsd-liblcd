@@ -356,7 +356,10 @@ lcd_ili9340c_begin(struct lcd_ili9340c *l)
 	lcd_ili9340c_writedata(l, 0x86);  //--
 
 	lcd_ili9340c_writecommand(l, ILI9340_MADCTL);    // Memory Access Control
-	lcd_ili9340c_writedata(l, ILI9340_MADCTL_MX | ILI9340_MADCTL_BGR);
+	/* 240x320 */
+	//lcd_ili9340c_writedata(l, ILI9340_MADCTL_MX | ILI9340_MADCTL_BGR);
+	/* 320x240 */
+	lcd_ili9340c_writedata(l, ILI9340_MADCTL_MV | ILI9340_MADCTL_BGR);
 
 	lcd_ili9340c_writecommand(l, ILI9340_PIXFMT);
 	lcd_ili9340c_writedata(l, 0x55);
@@ -448,8 +451,8 @@ lcd_ili9340c_init(struct lcd_ili9340c_cfg *cfg)
 	}
 
 	/* Initialise LCD layer with parameters and hardware methods */
-	l->tft_width = 240;
-	l->tft_height = 320;
+	l->tft_width = 320;
+	l->tft_height = 240;
 	l->lcd_pixel = lcd_ili9340c_drawPixel;
 //	l->lcd_hline = lcd_ili9340c_rawFastHLine;
 //	l->lcd_vline = lcd_ili9340c_rawFastVLine;
