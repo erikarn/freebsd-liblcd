@@ -182,35 +182,6 @@ void Adafruit_SSD1351::rawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t 
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief  Draws a filled rectangle using HW acceleration
-*/
-/**************************************************************************/
-void Adafruit_SSD1351::fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t fillcolor) {
-  // Transform x and y based on current rotation.
-  switch (getRotation()) {
-  case 0:  // No rotation
-    rawFillRect(x, y, w, h, fillcolor);
-    break;
-  case 1:  // Rotated 90 degrees clockwise.
-    swap(x, y);
-    x = WIDTH - x - h;
-    rawFillRect(x, y, h, w, fillcolor);
-    break;
-  case 2:  // Rotated 180 degrees clockwise.
-    x = WIDTH - x - w;
-    y = HEIGHT - y - h;
-    rawFillRect(x, y, w, h, fillcolor);
-    break;
-  case 3:  // Rotated 270 degrees clockwise.
-    swap(x, y);
-    y = HEIGHT - y - w;
-    rawFillRect(x, y, h, w, fillcolor);
-    break;
-  }
-}
-
 // Draw a horizontal line ignoring any screen rotation.
 void Adafruit_SSD1351::rawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color) {
   // Bounds check
@@ -353,6 +324,89 @@ lcd_ssd1351_drawPixel(struct lcd *lcd, int16_t x, int16_t y, uint32_t c)
 	return (0);
 }
 
+/*
+ * Draw a horizontal line.
+ */
+static int
+lcd_ssd1351_rawFastHLine(struct lcd *lcd, int16_t x0, int16_t x1, int16_t y0,
+    uint32_t c)
+{
+	struct lcd_ssd1351 *l;
+	uint16_t color;
+	int i;
+	int16_t w;
+
+	l = lcd->hw;
+
+	/* Map colour */
+	color = lcd_ssd1351_Color565((c >> 16) & 0xff,
+	    (c >> 8) & 0xff,
+	    (c) & 0xff);
+
+	/* XXX bounds checking */
+
+	/* Calculate width */
+	w = x1 - x0 + 1;
+
+	// set location
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_SETCOLUMN);
+	lcd_ssd1351_writeData(l, x0);
+	lcd_ssd1351_writeData(l, x1);
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_SETROW);
+	lcd_ssd1351_writeData(l, y0);
+	lcd_ssd1351_writeData(l, y0);
+	// fill!
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_WRITERAM);
+
+	for (i = 0; i < w; i++) {
+		lcd_ssd1351_writeData(l, color >> 8);
+		lcd_ssd1351_writeData(l, color);
+	}
+
+	return (0);
+}
+/*
+ * Draw a vertical line.
+ */
+static int
+lcd_ssd1351_rawFastVLine(struct lcd *lcd, int16_t x0, int16_t y0, int16_t y1,
+    uint32_t c)
+{
+	struct lcd_ssd1351 *l;
+	uint16_t color;
+	int i;
+	int16_t h;
+
+	l = lcd->hw;
+
+	/* Map colour */
+	color = lcd_ssd1351_Color565((c >> 16) & 0xff,
+	    (c >> 8) & 0xff,
+	    (c) & 0xff);
+
+	/* XXX bounds checking */
+
+	/* Height */
+	h = y1 - y0 + 1;
+
+	// set location
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_SETCOLUMN);
+	lcd_ssd1351_writeData(l, x0);
+	lcd_ssd1351_writeData(l, x0);
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_SETROW);
+	lcd_ssd1351_writeData(l, y0);
+	lcd_ssd1351_writeData(l, y1);
+	// fill!
+	lcd_ssd1351_writeCommand(l, SSD1351_CMD_WRITERAM);
+
+	for (i = 0; i < h; i++) {
+		lcd_ssd1351_writeData(l, color >> 8);
+		lcd_ssd1351_writeData(l, color);
+	}
+
+	return (0);
+}
+
 static int
 lcd_ssd1351_begin(struct lcd_ssd1351 *l)
 {
@@ -484,6 +538,8 @@ lcd_ssd1351_init(struct lcd_ssd1351_cfg *cfg)
 	l->tft_width = 128;
 	l->tft_height = cfg->height;
 	l->lcd_pixel = lcd_ssd1351_drawPixel;
+	l->lcd_hline = lcd_ssd1351_rawFastHLine;
+	l->lcd_vline = lcd_ssd1351_rawFastVLine;
 	//l->lcd_line = lcd_ssd1331_drawLine;
 	//l->lcd_row_blit = lcd_ssd1331_rowBlit;
 
