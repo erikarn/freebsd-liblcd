@@ -22,14 +22,9 @@ main(int argc, const char *argv[])
 	uint8_t col[3];
 	struct lcd *lcd;
 
-	/* Create an LCD handle */
-	lcd = lcd_create();
-	if (lcd == NULL) {
-		err(127, "lcd_create");
-	}
-
 	/* Create an instance of the SSD1331 */
-	if (lcd_ssd1331_init(lcd) < 0)
+	lcd = lcd_ssd1331_init();
+	if (lcd == NULL)
 		exit(127);
 
 	/* Blank out the screen */

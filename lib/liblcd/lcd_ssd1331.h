@@ -13,6 +13,6 @@ struct lcd_ssd1331 {
 	/* XXX no miso wired up */
 };
 
-extern	int lcd_ssd1331_init(struct lcd *l);
+extern	struct lcd * lcd_ssd1331_init(void);
 
 #endif	/* __LCD_SSD1331_H__ */

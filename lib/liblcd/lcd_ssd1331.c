@@ -429,28 +429,37 @@ Adafruit_SSD1331::Adafruit_SSD1331(uint8_t cs, uint8_t rs, uint8_t rst) : Adafru
 }
 #endif
 
-int
-lcd_ssd1331_init(struct lcd *l)
+struct lcd *
+lcd_ssd1331_init(void)
 {
-	struct lcd_ssd1331 *h;
+	struct lcd_ssd1331 *h = 0;
+	struct lcd *l = 0;
+
+	/* Create an LCD handle */
+	l = lcd_create();
+	if (l == NULL) {
+		warn("%s: calloc (lcd)", __func__);
+		goto error;
+	}
 
 	h = calloc(1, sizeof(*h));
 	if (h == NULL) {
 		warn("%s: calloc", __func__);
-		return (-1);
+		goto error;
 	}
 
 	/* forward/back pointers */
 	l->hw = h;
 	h->lcd = l;
 
+	/* HAL: create GPIO handle */
 	h->gp = gpio_open(0);
 	if (h->gp == GPIO_VALUE_INVALID) {
 		warn("%s: gpio_open", __func__);
-		return (-1);
+		goto error;
 	}
 
-	/* HAL initialisation */
+	/* Initialise LCD layer with parameters and hardware methods */
 	l->tft_width = 96;
 	l->tft_height = 64;
 	/* NB: no rotation support yet */
@@ -476,16 +485,14 @@ lcd_ssd1331_init(struct lcd *l)
 	/* Initialise LCD */
 	lcd_ssd1331_begin(h);
 
-	return (0);
-}
-
-void
-lcd_ssd1331_xline(struct lcd *lcd, int16_t x, uint32_t c)
-{
-	int16_t y;
-
-	/* XXX bounds check */
-	for (y = 0; y < lcd->height; y++) {
-			lcd_ssd1331_drawPixel(lcd, x, y, c);
+	return (l);
+error:
+	/* XXX TODO: methods */
+	if (h) {
+		if (h->gp != GPIO_VALUE_INVALID)
+			gpio_close(h->gp);
+		free(h);
 	}
+	free(l);
+	return (NULL);
 }
