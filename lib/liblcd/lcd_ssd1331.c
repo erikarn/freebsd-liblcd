@@ -350,6 +350,31 @@ lcd_ssd1331_pushColor(struct lcd_ssd1331 *l, uint16_t color)
 }
 
 
+static int
+lcd_ssd1331_rowBlit(struct lcd *lcd, int16_t x, int16_t y,
+    uint32_t *rgb, int l)
+{
+	struct lcd_ssd1331 *h = lcd->hw;
+	int i;
+	uint16_t color;
+	uint32_t c;
+
+	/* Set starting point */
+	lcd_ssd1331_goTo(h, x, y);
+
+	/* Push lots of colours */
+	for (i = 0; i < l; i++) {
+		c = rgb[i];
+		color = lcd_ssd1331_Color565(h,
+		    (c >> 16) & 0xff,
+		    (c >> 8) & 0xff,
+		    (c) & 0xff);
+		lcd_ssd1331_pushColor(h, color);
+	}
+
+	return (0);
+}
+
 void
 lcd_ssd1331_begin(struct lcd_ssd1331 *l)
 {
@@ -467,6 +492,7 @@ lcd_ssd1331_init(void)
 	l->height = 64;
 	l->lcd_pixel = lcd_ssd1331_drawPixel;
 	l->lcd_line = lcd_ssd1331_drawLine;
+	l->lcd_row_blit = lcd_ssd1331_rowBlit;
 
 	/* XXX hard-coded gpio pins for testing */
 	h->pin_cs = 19;
