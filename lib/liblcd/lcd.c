@@ -13,7 +13,7 @@
  */
 static int
 lcd_putChar(struct lcd *lcd, int16_t x0, int16_t y0,
-    unsigned char c, uint32_t fg, uint32_t bg)
+    char c, uint32_t fg, uint32_t bg)
 {
 	int x, y;
 	int o;
@@ -55,7 +55,7 @@ lcd_putChar(struct lcd *lcd, int16_t x0, int16_t y0,
 
 static int
 lcd_putStr(struct lcd *lcd, int16_t x0, int16_t y0,
-    const unsigned char *s, uint32_t fg, uint32_t bg)
+    const char *s, uint32_t fg, uint32_t bg)
 {
 	uint16_t x = 0;
 
