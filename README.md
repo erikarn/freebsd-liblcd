@@ -5,6 +5,8 @@ This is a simple example LCD drawing library for use with FreeBSD and
 libgpio.  The supported boards are:
 
 * Adafruit 96x64 colour OLED: http://www.adafruit.com/products/684
+* Adafruit 128x128 colour OLED: https://www.adafruit.com/products/1431
+* Adafruit 128x96 colour OLED: https://www.adafruit.com/products/1673
 
 This has been tested on the Carambola 2 MIPS platform (compiled natively,
 but cross-compiling should be easy enough.)  It uses libgpio to access
