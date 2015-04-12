@@ -55,7 +55,7 @@ main(int argc, const char *argv[])
 	}
 
 	/* Test putstring */
-//	lcd->lcd_putstr(lcd, 0, 0, "Hello, world!", 0x00ff007f, 0);
+	lcd->lcd_putstr(lcd, 0, 128, "Hello, world!", 0x00ffffff, 0x003f3f3f);
 
 	exit(0);
 }
